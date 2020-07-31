@@ -13,17 +13,17 @@ class Provider extends AbstractProvider
     const IDENTIFIER = 'OAUTHGEN';
 
     /**
+     * Bqse URLs.
+     */
+    const OAUTH_URL = 'https://auth.oauthgen.com';
+    const GRAPH_URL = 'https://graph.oauthgen.com/api/v1';
+
+    /**
      * The separating character for the requested scopes.
      *
      * @var string
      */
     protected $scopeSeparator = ' ';
-
-    /**
-     * BASE_URL.
-     */
-    protected $oauthUrl = 'https://auth.oauthgen.com';
-    protected $graphUrl = 'https://graph.oauthgen.com/api/v1';
 
     /**
      * {@inheritdoc}
@@ -35,7 +35,7 @@ class Provider extends AbstractProvider
      */
     protected function getAuthUrl($state)
     {
-        return $this->buildAuthUrlFromBase($this->oauthUrl.'/oauth2/auth', $state);
+        return $this->buildAuthUrlFromBase(self::OAUTH_URL.'/oauth2/auth', $state);
     }
 
     /**
@@ -43,7 +43,7 @@ class Provider extends AbstractProvider
      */
     protected function getTokenUrl()
     {
-        return $this->oauthUrl.'/oauth2/token';
+        return self::OAUTH_URL.'/oauth2/token';
     }
 
     /**
@@ -51,7 +51,7 @@ class Provider extends AbstractProvider
      */
     protected function getUserByToken($token)
     {
-        $response = $this->getHttpClient()->get($this->graphUrl.'/me', [
+        $response = $this->getHttpClient()->get(self::GRAPH_URL.'/me', [
             'headers' => [
                 'Authorization' => 'Bearer '.$token,
             ],
