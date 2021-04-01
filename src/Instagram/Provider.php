@@ -102,7 +102,7 @@ class Provider extends AbstractProvider
     /**
      * Allows compatibility for signed API requests.
      *
-     * @param string @endpoint
+     * @param string $endpoint
      * @param array $params
      *
      * @return string

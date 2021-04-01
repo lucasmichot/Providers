@@ -92,7 +92,7 @@ class Provider extends AbstractProvider
     }
 
     /**
-     * @param $token
+     * @param string $token
      *
      * @return string
      */

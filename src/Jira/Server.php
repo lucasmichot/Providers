@@ -25,8 +25,8 @@ class Server extends BaseServer
      *
      * !! RsaSha1Signature
      *
-     * @param ClientCredentialsInterface|array $clientCredentials
-     * @param SignatureInterface               $signature
+     * @param \League\OAuth1\Client\Credentials\ClientCredentialsInterface|array $clientCredentials
+     * @param \League\OAuth1\Client\Signature\SignatureInterface               $signature
      */
     public function __construct($clientCredentials, SignatureInterface $signature = null)
     {
@@ -58,11 +58,11 @@ class Server extends BaseServer
      * the temporary credentials identifier as passed back by the server
      * and finally the verifier code.
      *
-     * @param TemporaryCredentials $temporaryCredentials
+     * @param \League\OAuth1\Client\Credentials\TemporaryCredentials $temporaryCredentials
      * @param string               $temporaryIdentifier
      * @param string               $verifier
      *
-     * @return TokenCredentials
+     * @return \League\OAuth1\Client\Credentials\TokenCredentials
      */
     public function getTokenCredentials(TemporaryCredentials $temporaryCredentials, $temporaryIdentifier, $verifier)
     {

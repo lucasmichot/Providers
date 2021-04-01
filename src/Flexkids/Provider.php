@@ -81,7 +81,7 @@ class Provider extends AbstractProvider
     /**
      * @param string $code
      *
-     * @throws AuthenticationException
+     * @throws \Illuminate\Auth\AuthenticationException
      *
      * @return array
      */
@@ -130,9 +130,9 @@ class Provider extends AbstractProvider
     }
 
     /**
-     * @param $idToken
+     * @param string|null $idToken
      *
-     * @return Provider
+     * @return self
      */
     private function setIdToken($idToken)
     {

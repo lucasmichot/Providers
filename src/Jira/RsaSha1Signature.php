@@ -49,7 +49,7 @@ class RsaSha1Signature extends Signature
     /**
      * Set cert path.
      *
-     * @param $certPath
+     * @param string $certPath
      */
     public function setCertPath($certPath)
     {
@@ -59,7 +59,7 @@ class RsaSha1Signature extends Signature
     /**
      * Set cert passphrase.
      *
-     * @param $certPassphrase
+     * @param string $certPassphrase
      */
     public function setCertPassphrase($certPassphrase)
     {
@@ -71,7 +71,7 @@ class RsaSha1Signature extends Signature
      *
      * @param string $uri
      *
-     * @return Uri
+     * @return \GuzzleHttp\Psr7\Uri
      */
     protected function createUrl($uri)
     {
@@ -82,7 +82,7 @@ class RsaSha1Signature extends Signature
      * Generate a base string for a RSA-SHA1 signature
      * based on the given a url, method, and any parameters.
      *
-     * @param Url    $url
+     * @param \GuzzleHttp\Psr7\Uri    $url
      * @param string $method
      * @param array  $parameters
      *

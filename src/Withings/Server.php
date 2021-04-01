@@ -77,7 +77,7 @@ class Server extends BaseServer
      * the user's UID.
      *
      * @param mixed            $data
-     * @param TokenCredentials $tokenCredentials
+     * @param \League\OAuth1\Client\Credentials\TokenCredentials $tokenCredentials
      *
      * @return string|int
      */
@@ -109,9 +109,9 @@ class Server extends BaseServer
      *
      * @param string $body
      *
-     * @throws CredentialsException
+     * @throws \League\OAuth1\Client\Credentials\CredentialsException
      *
-     * @return TemporaryCredentials
+     * @return \League\OAuth1\Client\Credentials\TemporaryCredentials
      */
     protected function createTemporaryCredentials($body)
     {
@@ -162,8 +162,8 @@ class Server extends BaseServer
      *
      * :(
      *
-     * @param $url
-     * @param TokenCredentials $tokenCredentials
+     * @param string $url
+     * @param \League\OAuth1\Client\Credentials\TokenCredentials $tokenCredentials
      * @param array            $extraParams
      *
      * @return array

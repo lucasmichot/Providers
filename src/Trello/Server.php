@@ -28,7 +28,7 @@ class Server extends BaseServer
      *
      * @param string $accessToken
      *
-     * @return Trello
+     * @return self
      */
     public function setAccessToken($accessToken)
     {
