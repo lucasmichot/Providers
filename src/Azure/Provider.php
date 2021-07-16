@@ -32,7 +32,7 @@ class Provider extends AbstractProvider
     protected function getAuthUrl($state)
     {
         return $this->buildAuthUrlFromBase(
-            'https://login.microsoftonline.com/'.($this->config['tenant'] ?: 'common').'/oauth2/authorize',
+            'https://login.microsoftonline.com/'.($this->config['tenant'] ?? 'common').'/oauth2/authorize',
             $state
         );
     }
@@ -51,7 +51,7 @@ class Provider extends AbstractProvider
             'form_params' => $this->getTokenFields($code),
         ]);
 
-        $this->credentialsResponseBody = json_decode($response->getBody()->getContents(), true);
+        $this->credentialsResponseBody = json_decode((string) $response->getBody(), true);
 
         return $this->parseAccessToken($response->getBody());
     }
@@ -71,7 +71,7 @@ class Provider extends AbstractProvider
             ],
         ]);
 
-        return json_decode($response->getBody()->getContents(), true);
+        return json_decode((string) $response->getBody(), true);
     }
 
     /**
@@ -97,9 +97,7 @@ class Provider extends AbstractProvider
     }
 
     /**
-     * Add the additional configuration key 'tenant' to enable the branded sign-in experience.
-     *
-     * @return array
+     * {@inheritdoc}
      */
     public static function additionalConfigKeys()
     {

@@ -109,16 +109,16 @@ class Provider extends AbstractProvider
             return null;
         }
 
-        if (empty($this->getConfig('client_secret'))) {
+        if (empty($this->clientSecret)) {
             throw new RuntimeException('The Steam API key has not been specified.');
         }
 
         $response = $this->getHttpClient()->request(
             'GET',
-            sprintf(self::STEAM_INFO_URL, $this->getConfig('client_secret'), $token)
+            sprintf(self::STEAM_INFO_URL, $this->clientSecret, $token)
         );
 
-        $contents = json_decode($response->getBody()->getContents(), true);
+        $contents = json_decode((string) $response->getBody(), true);
 
         return Arr::get($contents, 'response.players.0');
     }
@@ -178,7 +178,7 @@ class Provider extends AbstractProvider
 
         $response = $this->getHttpClient()->request('POST', self::OPENID_URL, $requestOptions);
 
-        $results = $this->parseResults($response->getBody()->getContents());
+        $results = $this->parseResults((string) $response->getBody());
 
         $isValid = $results['is_valid'] === 'true';
 
@@ -300,8 +300,11 @@ class Provider extends AbstractProvider
     {
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public static function additionalConfigKeys()
     {
-        return ['client_secret', 'realm', 'https', 'proxy'];
+        return ['realm', 'proxy'];
     }
 }

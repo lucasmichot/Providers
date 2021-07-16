@@ -13,7 +13,7 @@ class Provider extends AbstractProvider
     public const IDENTIFIER = 'ADOBE';
     public const BASE_URL = 'https://ims-na1.adobelogin.com/ims';
 
-    protected array $scopes = ['openid', 'email', 'profile'];
+    protected $scopes = ['openid', 'email', 'profile'];
 
     protected function getAuthUrl($state): string
     {
@@ -49,7 +49,7 @@ class Provider extends AbstractProvider
                 ],
             ]);
 
-            return json_decode($response->getBody()->getContents(), true);
+            return json_decode((string) $response->getBody(), true);
         }
 
         return $this->credentialsResponseBody;

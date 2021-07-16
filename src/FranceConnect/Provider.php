@@ -87,7 +87,7 @@ class Provider extends AbstractProvider
             'form_params' => $this->getTokenFields($code),
         ]);
 
-        return json_decode($response->getBody()->getContents(), true);
+        return json_decode((string) $response->getBody(), true);
     }
 
     /**
@@ -137,7 +137,7 @@ class Provider extends AbstractProvider
             ],
         ]);
 
-        return json_decode($response->getBody()->getContents(), true);
+        return json_decode((string) $response->getBody(), true);
     }
 
     /**
@@ -163,7 +163,7 @@ class Provider extends AbstractProvider
     public function generateLogoutURL()
     {
         $params = [
-            'post_logout_redirect_uri' => config('services.franceconnect.logout_redirect'),
+            'post_logout_redirect_uri' => $this->getConfig('logout_redirect'),
             'id_token_hint'            => session('fc_token_id'),
         ];
 

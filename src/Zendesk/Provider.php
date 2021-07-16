@@ -20,6 +20,14 @@ class Provider extends AbstractProvider
     /**
      * {@inheritdoc}
      */
+    public static function additionalConfigKeys()
+    {
+        return ['subdomain'];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     protected function getAuthUrl($state)
     {
         return $this->buildAuthUrlFromBase(
@@ -50,7 +58,7 @@ class Provider extends AbstractProvider
             ]
         );
 
-        return json_decode($response->getBody()->getContents(), true)['user'];
+        return json_decode((string) $response->getBody(), true)['user'];
     }
 
     /**
@@ -81,6 +89,6 @@ class Provider extends AbstractProvider
      */
     private function getSubdomain()
     {
-        return config('services.zendesk.subdomain');
+        return $this->getConfig('subdomain');
     }
 }

@@ -89,7 +89,7 @@ class Provider extends AbstractProvider
             ],
         ]);
 
-        return json_decode($response->getBody()->getContents(), true);
+        return json_decode((string) $response->getBody(), true);
     }
 
     /**
@@ -126,13 +126,16 @@ class Provider extends AbstractProvider
             'query' => $this->getTokenFields($code),
         ]);
 
-        $this->credentialsResponseBody = json_decode($response->getBody()->getContents(), true);
+        $this->credentialsResponseBody = json_decode((string) $response->getBody(), true);
         $this->openId = $this->credentialsResponseBody['openid'];
 
         //return $this->parseAccessToken($response->getBody());
         return $this->credentialsResponseBody;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public static function additionalConfigKeys()
     {
         return ['auth_base_uri'];

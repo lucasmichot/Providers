@@ -56,7 +56,7 @@ class Provider extends AbstractProvider
             ]
         );
 
-        return json_decode($response->getBody()->getContents(), true);
+        return json_decode((string) $response->getBody(), true);
     }
 
     /**
@@ -91,11 +91,14 @@ class Provider extends AbstractProvider
      */
     private function getInstanceURL()
     {
-        $fromConfig = config('services.salesforce.instance_url');
-        if (!is_null($fromConfig)) {
-            return $fromConfig;
-        }
+        return $this->getConfig('instance_url', 'https://login.salesforce.com');
+    }
 
-        return 'https://login.salesforce.com';
+    /**
+     * {@inheritdoc}
+     */
+    public static function additionalConfigKeys()
+    {
+        return ['instance_url'];
     }
 }

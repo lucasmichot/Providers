@@ -26,14 +26,6 @@ class Provider extends AbstractProvider
     /**
      * {@inheritdoc}
      */
-    public static function additionalConfigKeys()
-    {
-        return ['base_url'];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     protected function getAuthUrl($state)
     {
         return $this->buildAuthUrlFromBase(
@@ -63,7 +55,7 @@ class Provider extends AbstractProvider
             ],
         ]);
 
-        return json_decode($response->getBody()->getContents(), true)['user'];
+        return json_decode((string) $response->getBody(), true)['user'];
     }
 
     /**

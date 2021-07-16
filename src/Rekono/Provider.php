@@ -59,7 +59,7 @@ class Provider extends AbstractProvider
             ]
         );
 
-        return json_decode($response->getBody()->getContents(), true);
+        return json_decode((string) $response->getBody(), true);
     }
 
     /**
@@ -69,7 +69,7 @@ class Provider extends AbstractProvider
     {
         return (new User())->setRaw($user)->map([
             'id'    => $user['sub'],
-            'name'  => $user['name'],
+            'name'  => $user['name'] ?? null,
             'email' => $user['email'],
         ]);
     }

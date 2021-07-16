@@ -28,13 +28,11 @@ class Provider extends AbstractProvider
     protected $scopeSeparator = ' ';
 
     /**
-     * @return array
+     * {@inheritdoc}
      */
     public static function additionalConfigKeys()
     {
-        return [
-            'url',
-        ];
+        return ['url'];
     }
 
     /**
@@ -49,7 +47,7 @@ class Provider extends AbstractProvider
 
             $response = $this->getHttpClient()->get($configUrl);
 
-            $data = json_decode($response->getBody()->getContents(), true);
+            $data = json_decode((string) $response->getBody(), true);
         }
 
         return $data;
@@ -108,9 +106,7 @@ class Provider extends AbstractProvider
             ),
         ]);
 
-        $data = json_decode($response->getBody()->getContents(), true);
-
-        return $data;
+        return json_decode((string) $response->getBody(), true);
     }
 
     /**
@@ -141,15 +137,7 @@ class Provider extends AbstractProvider
             ]
         );
 
-        return json_decode($response->getBody()->getContents(), true);
-    }
-
-    /**
-     * @param string $arrayKey
-     */
-    protected function getFromConfig($arrayKey)
-    {
-        return app()['config']['services.whmcs'][$arrayKey];
+        return json_decode((string) $response->getBody(), true);
     }
 
     /**

@@ -57,7 +57,7 @@ class Provider extends AbstractProvider
             ]
         );
 
-        return json_decode($response->getBody()->getContents(), true);
+        return json_decode((string) $response->getBody(), true);
     }
 
     /**
@@ -98,6 +98,9 @@ class Provider extends AbstractProvider
         ]);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public static function additionalConfigKeys()
     {
         return ['test'];

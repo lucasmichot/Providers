@@ -32,7 +32,7 @@ class Provider extends AbstractProvider
             $this->buildAuthUrlFromBase(
                 sprintf(
                     'https://login.microsoftonline.com/%s/oauth2/v2.0/authorize',
-                    $this->config['tenant'] ?: 'common'
+                    $this->getConfig('tenant', 'common')
                 ),
                 $state
             );
@@ -62,7 +62,7 @@ class Provider extends AbstractProvider
             ]
         );
 
-        return json_decode($response->getBody()->getContents(), true);
+        return json_decode((string) $response->getBody(), true);
     }
 
     /**
@@ -102,9 +102,7 @@ class Provider extends AbstractProvider
     }
 
     /**
-     * Add the additional configuration key 'tenant' to enable the branded sign-in experience.
-     *
-     * @return array
+     * {@inheritdoc}
      */
     public static function additionalConfigKeys()
     {

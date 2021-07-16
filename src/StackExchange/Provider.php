@@ -64,7 +64,7 @@ class Provider extends AbstractProvider
             'form_params' => $this->getTokenFields($code),
         ]);
 
-        parse_str($response->getBody()->getContents(), $data);
+        parse_str((string) $response->getBody(), $data);
 
         return $data;
     }
@@ -79,9 +79,9 @@ class Provider extends AbstractProvider
             'https://api.stackexchange.com/'.$this->version.
             '/me?'.http_build_query(
                 [
-                    'site'         => $this->getFromConfig('site'),
+                    'site'         => $this->getConfig('site'),
                     'access_token' => $token,
-                    'key'          => $this->getFromConfig('key'),
+                    'key'          => $this->getConfig('key'),
                 ]
             ),
             [
@@ -91,15 +91,15 @@ class Provider extends AbstractProvider
             ]
         );
 
-        return json_decode($response->getBody()->getContents(), true);
+        return json_decode((string) $response->getBody(), true);
     }
 
     /**
-     * @param string $arrayKey
+     * {@inheritdoc}
      */
-    protected function getFromConfig($arrayKey)
+    public static function additionalConfigKeys()
     {
-        return app()['config']['services.stackexchange'][$arrayKey];
+        return ['site', 'key'];
     }
 
     /**
