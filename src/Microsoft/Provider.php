@@ -3,6 +3,7 @@
 namespace SocialiteProviders\Microsoft;
 
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\RequestOptions;
 use Illuminate\Support\Arr;
 use SocialiteProviders\Manager\OAuth2\AbstractProvider;
@@ -17,7 +18,21 @@ class Provider extends AbstractProvider
      *
      * @see https://docs.microsoft.com/en-us/graph/permissions-reference#user-permissions
      */
-    protected const DEFAULT_FIELDS_USER = ['id', 'displayName', 'businessPhones', 'givenName', 'jobTitle', 'mail', 'mobilePhone', 'officeLocation', 'preferredLanguage', 'surname', 'userPrincipalName'];
+    protected const DEFAULT_FIELDS_USER = [
+        'id',
+        'displayName',
+        'businessPhones',
+        'givenName',
+        'jobTitle',
+        'department',
+        'mail',
+        'mobilePhone',
+        'officeLocation',
+        'preferredLanguage',
+        'surname',
+        'userPrincipalName',
+        'employeeId',
+    ];
 
     /**
      * Default tenant field list to request from Microsoft.
@@ -64,8 +79,9 @@ class Provider extends AbstractProvider
     /**
      * Return the logout endpoint with an optional post_logout_redirect_uri query parameter.
      *
-     * @param  string|null  $redirectUri  The URI to redirect to after logout, if provided.
+     * @param string|null $redirectUri The URI to redirect to after logout, if provided.
      *                                    If not provided, no post_logout_redirect_uri parameter will be included.
+     *
      * @return string The logout endpoint URL.
      */
     public function getLogoutUrl(?string $redirectUri = null)
@@ -74,7 +90,7 @@ class Provider extends AbstractProvider
 
         return $redirectUri === null ?
             $logoutUrl :
-            $logoutUrl.'?'.http_build_query(['post_logout_redirect_uri' => $redirectUri], '', '&', $this->encodingType);
+            $logoutUrl . '?' . http_build_query(['post_logout_redirect_uri' => $redirectUri], '', '&', $this->encodingType);
     }
 
     /**
@@ -86,12 +102,13 @@ class Provider extends AbstractProvider
             'https://graph.microsoft.com/v1.0/me',
             [
                 RequestOptions::HEADERS => [
-                    'Accept'        => 'application/json',
-                    'Authorization' => 'Bearer '.$token,
+                    'Accept' => 'application/json',
+                    'Authorization' => 'Bearer ' . $token,
                 ],
                 RequestOptions::QUERY => [
                     '$select' => implode(',', array_merge(self::DEFAULT_FIELDS_USER, $this->getConfig('fields', []))),
                 ],
+                RequestOptions::PROXY => $this->getConfig('proxy'),
             ]
         );
 
@@ -104,9 +121,10 @@ class Provider extends AbstractProvider
                     "https://graph.microsoft.com/v1.0/me/photos/{$imageSize}/\$value",
                     [
                         RequestOptions::HEADERS => [
-                            'Accept'        => 'image/jpg',
-                            'Authorization' => 'Bearer '.$token,
+                            'Accept' => 'image/jpg',
+                            'Authorization' => 'Bearer ' . $token,
                         ],
+                        RequestOptions::PROXY => $this->getConfig('proxy'),
                     ]
                 );
 
@@ -117,22 +135,23 @@ class Provider extends AbstractProvider
             }
         }
 
-        if ($this->getConfig('tenant', 'common') === 'common' && $this->getConfig('include_tenant_info', false)) {
+        if ($this->getConfig('include_tenant_info', false)) {
             try {
                 $responseTenant = $this->getHttpClient()->get(
                     'https://graph.microsoft.com/v1.0/organization',
                     [
                         RequestOptions::HEADERS => [
-                            'Accept'        => 'application/json',
-                            'Authorization' => 'Bearer '.$token,
+                            'Accept' => 'application/json',
+                            'Authorization' => 'Bearer ' . $token,
                         ],
                         RequestOptions::QUERY => [
                             '$select' => implode(',', array_merge(self::DEFAULT_FIELDS_TENANT, $this->getConfig('tenant_fields', []))),
                         ],
+                        RequestOptions::PROXY => $this->getConfig('proxy'),
                     ]
                 );
                 $formattedResponse['tenant'] = json_decode((string) $responseTenant->getBody(), true)['value'][0] ?? null;
-            } catch (ClientException) {
+            } catch (RequestException) {
                 //if exception then tenant does not exist.
                 $formattedResponse['tenant'] = null;
             }
@@ -141,28 +160,41 @@ class Provider extends AbstractProvider
         return $formattedResponse;
     }
 
+    public function getAccessTokenResponse($code)
+    {
+        $response = $this->getHttpClient()->post($this->getTokenUrl(), [
+            RequestOptions::HEADERS => ['Accept' => 'application/json'],
+            RequestOptions::FORM_PARAMS => $this->getTokenFields($code),
+            RequestOptions::PROXY => $this->getConfig('proxy'),
+        ]);
+
+        return json_decode((string) $response->getBody(), true);
+    }
+
     /**
      * {@inheritdoc}
      */
     protected function mapUserToObject(array $user)
     {
         return (new User())->setRaw($user)->map([
-            'id'       => $user['id'],
+            'id' => $user['id'],
             'nickname' => null,
-            'name'     => $user['displayName'],
-            'email'    => $user['userPrincipalName'],
-            'avatar'   => Arr::get($user, 'avatar'),
+            'name' => $user['displayName'],
+            'email' => $user['userPrincipalName'],
+            'avatar' => Arr::get($user, 'avatar'),
 
-            'businessPhones'    => Arr::get($user, 'businessPhones'),
-            'displayName'       => Arr::get($user, 'displayName'),
-            'givenName'         => Arr::get($user, 'givenName'),
-            'jobTitle'          => Arr::get($user, 'jobTitle'),
-            'mail'              => Arr::get($user, 'mail'),
-            'mobilePhone'       => Arr::get($user, 'mobilePhone'),
-            'officeLocation'    => Arr::get($user, 'officeLocation'),
+            'businessPhones' => Arr::get($user, 'businessPhones'),
+            'displayName' => Arr::get($user, 'displayName'),
+            'givenName' => Arr::get($user, 'givenName'),
+            'jobTitle' => Arr::get($user, 'jobTitle'),
+            'department' => Arr::get($user, 'department'),
+            'mail' => Arr::get($user, 'mail'),
+            'mobilePhone' => Arr::get($user, 'mobilePhone'),
+            'officeLocation' => Arr::get($user, 'officeLocation'),
             'preferredLanguage' => Arr::get($user, 'preferredLanguage'),
-            'surname'           => Arr::get($user, 'surname'),
+            'surname' => Arr::get($user, 'surname'),
             'userPrincipalName' => Arr::get($user, 'userPrincipalName'),
+            'employeeId' => Arr::get($user, 'employeeId'),
 
             'tenant' => Arr::get($user, 'tenant'),
         ]);
@@ -186,6 +218,14 @@ class Provider extends AbstractProvider
      */
     public static function additionalConfigKeys()
     {
-        return ['tenant', 'include_tenant_info', 'include_avatar', 'include_avatar_size', 'fields', 'tenant_fields'];
+        return [
+            'tenant',
+            'include_tenant_info',
+            'include_avatar',
+            'include_avatar_size',
+            'fields',
+            'tenant_fields',
+            'proxy',
+        ];
     }
 }
