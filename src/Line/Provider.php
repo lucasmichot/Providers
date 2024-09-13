@@ -81,7 +81,7 @@ class Provider extends AbstractProvider
      */
     protected function mapUserToObject(array $user)
     {
-        return (new User())->setRaw($user)->map([
+        return (new User)->setRaw($user)->map([
             'id'       => $user['userId'] ?? $user['sub'] ?? null,
             'nickname' => null,
             'name'     => $user['displayName'] ?? $user['name'] ?? null,
@@ -96,7 +96,7 @@ class Provider extends AbstractProvider
     public function user()
     {
         if ($this->hasInvalidState()) {
-            throw new InvalidStateException();
+            throw new InvalidStateException;
         }
 
         $response = $this->getAccessTokenResponse($this->getCode());
@@ -119,5 +119,32 @@ class Provider extends AbstractProvider
         return $user->setToken($this->parseAccessToken($response))
             ->setRefreshToken($this->parseRefreshToken($response))
             ->setExpiresIn($this->parseExpiresIn($response));
+    }
+
+      /**
+     * {@inheritdoc}
+     */
+    public static function additionalConfigKeys()
+    {
+        return [
+            'bot_prompt',
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @throws \InvalidArgumentException
+     */
+    protected function getCodeFields($state = null)
+    {
+        $fields = parent::getCodeFields($state);
+
+        $botPrompt = $this->getConfig('bot_prompt');
+        if (! empty($botPrompt)) {
+            $fields['bot_prompt'] = $botPrompt;
+        }
+
+        return $fields;
     }
 }
